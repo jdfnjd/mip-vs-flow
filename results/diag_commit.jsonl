@@ -1,0 +1,36 @@
+{"seed":0,"policy":"regression:mip@0.9:first","lateral":0.0817042291,"forward":0.2003257871}
+{"seed":0,"policy":"mip0.9:mip@0.9:first","lateral":0.0574821271,"forward":0.2023968548}
+{"seed":0,"policy":"mip0.9:mip@0.9","lateral":0.2309399396,"forward":0.2817333043}
+{"seed":0,"policy":"mip0.9:mip@0.9 stoch","lateral":0.2672249973,"forward":0.281370312}
+{"seed":0,"policy":"mip0.5:mip@0.5","lateral":0.4731397331,"forward":0.2205940336}
+{"seed":0,"policy":"mip0.5:mip@0.5 stoch","lateral":0.7293591499,"forward":0.2079928219}
+{"seed":0,"policy":"flow:flow@1","lateral":0.4073151648,"forward":0.206358403}
+{"seed":0,"policy":"flow:flow@1 stoch","lateral":0.4044410288,"forward":0.201895833}
+{"seed":0,"policy":"flow:flow@2","lateral":0.8426058888,"forward":0.2060600966}
+{"seed":0,"policy":"flow:flow@2 stoch","lateral":0.8251584768,"forward":0.2026403546}
+{"seed":0,"policy":"flow:flow@20","lateral":1.000682354,"forward":0.2064389437}
+{"seed":0,"policy":"flow:flow@20 stoch","lateral":0.9994300604,"forward":0.202791214}
+{"seed":1,"policy":"regression:mip@0.9:first","lateral":0.127542913,"forward":0.203459233}
+{"seed":1,"policy":"mip0.9:mip@0.9:first","lateral":0.2364887148,"forward":0.2038953006}
+{"seed":1,"policy":"mip0.9:mip@0.9","lateral":0.6697540879,"forward":0.25764516}
+{"seed":1,"policy":"mip0.9:mip@0.9 stoch","lateral":0.6674435735,"forward":0.2571860552}
+{"seed":1,"policy":"mip0.5:mip@0.5","lateral":0.718847394,"forward":0.2199141383}
+{"seed":1,"policy":"mip0.5:mip@0.5 stoch","lateral":0.8098917007,"forward":0.2110867649}
+{"seed":1,"policy":"flow:flow@1","lateral":0.4793642461,"forward":0.2167288661}
+{"seed":1,"policy":"flow:flow@1 stoch","lateral":0.4759132862,"forward":0.2034840435}
+{"seed":1,"policy":"flow:flow@2","lateral":0.8771173358,"forward":0.2117501944}
+{"seed":1,"policy":"flow:flow@2 stoch","lateral":0.8590499759,"forward":0.2045585364}
+{"seed":1,"policy":"flow:flow@20","lateral":1.0042021275,"forward":0.2067627311}
+{"seed":1,"policy":"flow:flow@20 stoch","lateral":1.004758954,"forward":0.2023809552}
+{"seed":2,"policy":"regression:mip@0.9:first","lateral":0.0789675191,"forward":0.2003901303}
+{"seed":2,"policy":"mip0.9:mip@0.9:first","lateral":0.0662347302,"forward":0.2031765878}
+{"seed":2,"policy":"mip0.9:mip@0.9","lateral":0.3286821842,"forward":0.2836625576}
+{"seed":2,"policy":"mip0.9:mip@0.9 stoch","lateral":0.3268000484,"forward":0.2827140391}
+{"seed":2,"policy":"mip0.5:mip@0.5","lateral":0.3484494388,"forward":0.2137659341}
+{"seed":2,"policy":"mip0.5:mip@0.5 stoch","lateral":0.6739932895,"forward":0.2064846903}
+{"seed":2,"policy":"flow:flow@1","lateral":0.4153464437,"forward":0.2097757757}
+{"seed":2,"policy":"flow:flow@1 stoch","lateral":0.4262596071,"forward":0.1985423714}
+{"seed":2,"policy":"flow:flow@2","lateral":0.8665046692,"forward":0.2066624314}
+{"seed":2,"policy":"flow:flow@2 stoch","lateral":0.8623586893,"forward":0.2014795542}
+{"seed":2,"policy":"flow:flow@20","lateral":1.0042923689,"forward":0.2056017071}
+{"seed":2,"policy":"flow:flow@20 stoch","lateral":1.0055683851,"forward":0.2002930492}

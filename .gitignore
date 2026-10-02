@@ -1,0 +1,5 @@
+__pycache__/
+.venv/
+data/
+logs/
+results/*_s[0-9].jsonl

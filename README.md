@@ -25,6 +25,19 @@ a gap solves the task.
 On the paper's datasets, the bimodality found by `multimodality.py` sits mostly
 in the gripper command, not arm motion.
 
+## Follow-up checks
+
+Suggested by the paper's first author ([followup.py](followup.py)):
+
+- **Original-form MIP** (`t* a + (1 - t*) z`): with a deterministic sampler it
+  stays below flow at every t\* in 0.3-0.9 (best 70%); with noise in the second
+  step it reaches 94% at t\* = 0.4.
+  ![t* sweep](figures/followup_tstar.png)
+- **First-chunk displacement vs start position:** one-step flow from z = 0
+  follows the side of the start (98% of positions) with a smooth ramp, not the
+  conditional mean; 20-step flow is a sharp step; regression stays near zero.
+  ![first chunk](figures/followup_chunk.png)
+
 ## Run
 
 ```bash
@@ -32,6 +45,9 @@ pip install torch numpy pandas matplotlib h5py "zarr<3" scipy
 python run_sweep.py --exp hard      # also: alpha_n, exec, commit
 python run_fix.py                   # MIP t* and flow-step variants
 python diag_commit.py               # first-chunk commitment
+python followup.py sweep            # original-form MIP over t*
+python followup.py chunk            # first-chunk displacement vs start position
+python followup.py plot
 python multimodality.py             # needs data/ from huggingface.co/datasets/ChaoyiPan/mip-dataset
 python plot.py alpha_n exec commit hard multimodality
 ```

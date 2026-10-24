@@ -124,9 +124,19 @@ def sample_mode(rng, x0: float, cfg: TaskCfg, centers) -> int:
     return int(np.argmin(np.abs(centers - x0)))
 
 
+MAX_DISTRACT = 32  # distractor values come from their own stream, as prefixes of this width
+
+
 def make_dataset(cfg: TaskCfg, seed: int):
-    """Returns obs (N, obs_dim), act (N, H*2), plus per-demo modes."""
+    """Returns obs (N, obs_dim), act (N, H*2), plus per-demo modes.
+
+    Distractors are drawn from a separate random stream, so the demonstrations
+    (starts, routes, waypoints) are identical for every distractor_dim, and a
+    smaller distractor set is a prefix of a larger one.
+    """
+    assert cfg.distractor_dim <= MAX_DISTRACT
     rng = np.random.default_rng(seed)
+    drng = np.random.default_rng([seed, 1])
     centers = gap_centers(cfg.K)
     obs_list, act_list, modes = [], [], []
     for _ in range(cfg.n_demos):
@@ -147,7 +157,7 @@ def make_dataset(cfg: TaskCfg, seed: int):
         # pad with the goal so late chunks are "stay"
         traj = np.concatenate([traj, np.repeat(traj[-1:], cfg.horizon, 0)], 0)
         deltas = np.diff(traj, axis=0)  # (T-1, 2)
-        distract = rng.standard_normal(cfg.distractor_dim).astype(np.float32)
+        distract = drng.standard_normal(MAX_DISTRACT)[: cfg.distractor_dim].astype(np.float32)
         T = len(traj) - cfg.horizon
         for t in range(T):
             o = np.concatenate([traj[t], distract])
@@ -329,7 +339,9 @@ def evaluate(net, on, an, method, cfg: TaskCfg, n_eps: int, seed: int, device: s
     centers = gap_centers(cfg.K)
     x0 = g.uniform(-cfg.start_x_range, cfg.start_x_range, n_eps).astype(np.float32)
     pos = torch.as_tensor(np.stack([x0, np.full_like(x0, cfg.start_y)], 1), device=device)
-    distract = torch.as_tensor(g.standard_normal((n_eps, cfg.distractor_dim)).astype(np.float32), device=device)
+    dg = np.random.default_rng([10_000 + seed, 1])  # own stream, prefix-consistent across distractor_dim
+    distract = torch.as_tensor(dg.standard_normal((n_eps, MAX_DISTRACT))[:, : cfg.distractor_dim]
+                               .astype(np.float32), device=device)
     goal = torch.as_tensor(GOAL, device=device)
     alive = torch.ones(n_eps, dtype=torch.bool, device=device)
     success = torch.zeros(n_eps, dtype=torch.bool, device=device)

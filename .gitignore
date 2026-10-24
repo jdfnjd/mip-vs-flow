@@ -3,3 +3,4 @@ __pycache__/
 data/
 logs/
 results/*_s[0-9].jsonl
+ckpt/

@@ -9,6 +9,7 @@ Examples:
   python run_sweep.py --exp exec      # replanning interval
   python run_sweep.py --exp commit    # runway x start range
   python run_sweep.py --exp hard      # hard corner x replanning interval
+  python run_sweep.py --exp density --save_dir ckpt/density   # demos x distractor dims
 """
 
 from __future__ import annotations
@@ -86,6 +87,7 @@ def main():
     ap.add_argument("--seeds", type=int, default=None, help="use only the first n seeds")
     ap.add_argument("--threads", type=int, default=None, help="torch CPU threads")
     ap.add_argument("--seed_ids", default=None, help="comma-separated seeds (for parallel shards)")
+    ap.add_argument("--save_dir", default=None, help="save each trained EMA model + normalisers here")
     args = ap.parse_args()
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -120,6 +122,12 @@ def main():
                 continue
             t0 = time.time()
             net, on, an, final_loss = train(method, obs, act, tcfg, seed, device)
+            if args.save_dir:
+                ck = Path(args.save_dir)
+                ck.mkdir(parents=True, exist_ok=True)
+                torch.save({"state": net.state_dict(), "on": (on.mean, on.std), "an": (an.mean, an.std),
+                            "method": method, "seed": seed, "cfg": asdict(cfg), "tcfg": asdict(tcfg)},
+                           ck / f"a{cfg.alpha}_N{cfg.n_demos}_D{cfg.distractor_dim}_s{seed}_{method}.pt")
             for (name, stoch), e in itertools.product(evals, execs):
                 ecfg = replace(cfg, n_action_exec=e)
                 res = evaluate(net, on, an, method, ecfg, args.eval_eps, seed, device, stochastic=stoch)

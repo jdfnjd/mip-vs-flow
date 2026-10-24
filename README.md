@@ -45,6 +45,21 @@ Suggested by the paper's first author ([followup.py](followup.py)):
   sharply near x0 = 0 (seed-dependent offset); regression moves much less and
   does not follow the side of the start (37%).
   ![first chunk](figures/followup_chunk.png)
+- **Data density** (`run_sweep.py --exp density`, [density_diag.py](density_diag.py)):
+  hard corner with 10 / 50 / 250 demos and 0 / 8 / 32 per-episode distractor
+  observation dims unrelated to the route. With 250 demos, 8 distractors raise
+  regression from 16% to 96% and MIP from 27% to 94%; flow stays at 100% and the
+  `alpha = 0` control at about 93% or above. Closed-loop probes from fixed
+  observations: given another demo's distractors, regression follows that demo's
+  route (0.86 vs 0.50 reference), i.e. it uses the distractors as a tie-breaker.
+  Flow shows little such association with 250 demos and keeps both routes at a
+  fixed observation, but moves the same way as demos get fewer (donor agreement
+  0.51 / 0.74 / 0.99, fixed-observation route diversity 0.47 / 0.18 / 0 for
+  250 / 50 / 10 demos; 0.86 is the expected score of a perfect 50/50 sampler).
+  This is graded, not a switch: with 250 demos and 32 distractors flow does both.
+  With 10 demos and distractors the control fails too, and with replanning every
+  4 steps the success gap is much smaller (regression 80% to 97%).
+  ![density](figures/density.png)
 
 ## Run
 
@@ -56,8 +71,10 @@ python diag_commit.py               # first-chunk commitment
 python followup.py sweep            # original-form MIP over t*
 python followup.py chunk            # first-chunk displacement vs start position
 python followup.py plot
+python run_sweep.py --exp density --save_dir ckpt/density   # demos x distractors, saves models
+python density_diag.py              # closed-loop probes on the saved models
 python multimodality.py             # needs data/ from huggingface.co/datasets/ChaoyiPan/mip-dataset
-python plot.py alpha_n exec commit hard multimodality
+python plot.py alpha_n exec commit hard density multimodality
 ```
 
 Results used for the figures are in `results/`.

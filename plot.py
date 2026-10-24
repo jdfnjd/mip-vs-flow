@@ -134,6 +134,56 @@ def plot_hard():
     fig.savefig(FIG / "hard.png", dpi=150)
 
 
+def plot_density():
+    df = load("density")
+    df = df[df.n_action_exec == 8]
+    diag = pd.read_json("results/density_diag.jsonl", lines=True)
+    diag = diag[diag.n_action_exec == 8]
+    meths = ["regression", "mip", "flow"]
+    groups = [(n, d) for n in (10, 50, 250) for d in (0, 8, 32)]
+    fig, axes = plt.subplots(1, 3, figsize=(19, 4.4), gridspec_kw={"width_ratios": [2, 2, 1.3]})
+    for ax, a, title in ((axes[0], 1.0, r"$\alpha$ = 1 (expert picks a gap at random)"),
+                         (axes[1], 0.0, r"$\alpha$ = 0 control (nearest gap)")):
+        m, s = agg(df[df.alpha == a], ["n_demos", "distractor_dim"], "success")
+        x = np.arange(len(groups))
+        for i, meth in enumerate(meths):
+            ax.bar(x + (i - 1) * 0.27, [100 * m.loc[g, meth] for g in groups], 0.27,
+                   yerr=[100 * s.loc[g, meth] for g in groups], color=COLOR[meth], label=LABEL[meth], capsize=2)
+        ax.set_xticks(x, [f"N={n}\nD={d}" for n, d in groups], fontsize=8)
+        for b in (2.5, 5.5):
+            ax.axvline(b, color="k", lw=0.6)
+        ax.set_ylim(0, 105)
+        ax.set_ylabel("success (%)")
+        ax.set_title(title)
+        ax.grid(alpha=0.3, axis="y")
+    axes[0].legend(fontsize=8, loc="upper center", ncol=3)
+    for a_ in axes[:2]:
+        a_.set_ylim(0, 118)
+    ax = axes[2]
+    g = diag[(diag.alpha == 1.0) & (diag.distractor_dim == 8)].groupby(["policy", "n_demos"])
+    ns = [10, 50, 250]
+    ax.plot(ns, [g.shuf_donor.mean()[("regression", n)] for n in ns], "o-", color=COLOR["regression"],
+            label="regression: follows donor's route")
+    ax.plot(ns, [g.shuf_donor.mean()[("flow", n)] for n in ns], "o-", color=COLOR["flow"],
+            label="flow: follows donor's route")
+    ax.plot(ns, [g.two_sided_fixed.mean()[("flow", n)] for n in ns], "s--", color=COLOR["flow"],
+            label="flow: both routes at one observation")
+    ax.axhline(0.5, color="k", ls=":", lw=0.8)
+    ax.text(10, 0.52, "chance (donor)", fontsize=7)
+    ax.axhline(0.86, color=COLOR["flow"], ls=":", lw=0.8)
+    ax.text(10, 0.88, "perfect 50/50 sampler (K=32)", fontsize=7)
+    ax.set_xscale("log")
+    ax.set_xticks(ns, [str(n) for n in ns])
+    ax.set_xlabel("demos (D = 8 distractors)")
+    ax.set_ylim(0, 1.05)
+    ax.set_title(r"Mechanism ($\alpha$ = 1, closed-loop probes)")
+    ax.legend(fontsize=7, loc="center left")
+    ax.grid(alpha=0.3)
+    fig.suptitle("Data density in the hard corner (8 steps per replan, 3 seeds)")
+    fig.tight_layout()
+    fig.savefig(FIG / "density.png", dpi=150)
+
+
 def plot_multimodality():
     import json
 
@@ -193,7 +243,7 @@ if __name__ == "__main__":
     if "multimodality" in sys.argv[1:]:
         plot_multimodality()
         print("plotted multimodality")
-    which = sys.argv[1:] or ["alpha_n", "exec", "commit", "hard"]
+    which = sys.argv[1:] or ["alpha_n", "exec", "commit", "hard", "density"]
     for w in which:
         if Path(f"results/{w}.jsonl").exists():
             globals()[f"plot_{w}"]()

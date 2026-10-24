@@ -56,10 +56,19 @@ def experiments(name: str):
             for a in (0.0, 0.5, 1.0)
         ]
         return grid, [0, 1, 2], TrainCfg()
+    if name == "density":
+        # data density in the hard corner: fewer demos and per-episode distractor
+        # observation dims (unrelated to the route) make every demo look unique;
+        # alpha=0 is the unimodal control for the same grid
+        grid = [
+            replace(base, alpha=a, n_demos=n, distractor_dim=d, start_y=-0.5, approach_y=0.15, start_x_range=0.1)
+            for a, n, d in itertools.product((1.0, 0.0), (10, 50, 250), (0, 8, 32))
+        ]
+        return grid, [0, 1, 2], TrainCfg()
     raise ValueError(name)
 
 
-EXEC_LISTS = {"exec": [1, 2, 4, 8], "hard": [1, 2, 4, 8]}
+EXEC_LISTS = {"exec": [1, 2, 4, 8], "hard": [1, 2, 4, 8], "density": [4, 8]}
 
 
 def key(cfg: TaskCfg, seed: int) -> str:

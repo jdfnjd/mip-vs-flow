@@ -1,19 +1,22 @@
 """Follow-up checks suggested by Chaoyi Pan (Oct 2026).
 
 1. Original-form MIP (I_t* = t* a + (1 - t*) z) over a finer t* grid, in two
-   variants that differ only in how the first-step output is fed to step two:
+   separately trained variants:
      paper - step 1 predicts a, step 2 input is t* * a_hat        (paper eq.)
      repo  - step 1 predicts t* a, step 2 input is pred0 * t*      (mip_origin_loss /
              mip_origin_sampler in the official repo, i.e. about t*^2 a)
+   They differ in the step-1 target as well as the step-2 input scale, so their
+   gap is not the effect of the sampler factor alone. stochastic=True adds
+   (1 - t*) z to the step-2 input; this is not part of the official sampler.
    Hard corner, alpha = 1, 8 steps per replan; alpha = 0 control included.
 
 2. Signed sideways displacement of the first action chunk vs the initial
    horizontal position, to tell a sharp route-selection rule (sign follows x0)
    from a fixed preference for one side.
 
-Usage: python followup.py sweep --seed_ids 0     (shard by seed; then concatenate
-                                                  results/followup_tstar_s*.jsonl
-                                                  into results/followup_tstar.jsonl)
+Usage: python followup.py sweep                  (all seeds -> results/followup_tstar.jsonl)
+       python followup.py sweep --seed_ids 0     (one shard -> results/followup_tstar_s0.jsonl;
+                                                  concatenate shards into followup_tstar.jsonl)
        python followup.py chunk
        python followup.py plot
 """
@@ -138,7 +141,7 @@ def plot():
         ax.set_title(f"seed {s}")
         ax.set_xlabel("initial horizontal position x0")
         ax.grid(alpha=0.3)
-    axes[0].set_ylabel("signed sideways displacement of first chunk\n(fraction of expert; ±1 = commits to a gap)")
+    axes[0].set_ylabel("signed sideways displacement of first chunk\n(fraction of the expert's average; ±1 = expert-like)")
     axes[0].legend(fontsize=8)
     fig.suptitle("Hard corner, alpha = 1: what the first action chunk does at each start position")
     fig.tight_layout()
@@ -177,6 +180,7 @@ if __name__ == "__main__":
         plot()
     elif args.what == "sweep":
         seeds = [int(s) for s in args.seed_ids.split(",")]
-        sweep(seeds, Path(f"results/followup_tstar_s{'_'.join(map(str, seeds))}.jsonl"), args.eval_eps)
+        name = "followup_tstar" if seeds == [0, 1, 2] else f"followup_tstar_s{'_'.join(map(str, seeds))}"
+        sweep(seeds, Path(f"results/{name}.jsonl"), args.eval_eps)
     else:
         chunk(Path("results/followup_chunk.jsonl"))

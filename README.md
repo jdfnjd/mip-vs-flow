@@ -8,9 +8,11 @@ on a small MLP (3 seeds, 500 episodes each).
 
 ![hard corner](figures/hard.png)
 
-**Result.** Bimodal demos alone do not break regression or MIP (94-100% success).
-They fail only with full ambiguity, a short runway and the whole 8-step chunk run
-open loop:
+**Result.** In the default geometry, bimodal demos alone do not break regression
+or MIP (94-100% success). They degrade with a short runway and near-symmetric
+starts, and fail most with full ambiguity and the whole 8-step chunk run open
+loop (e.g. at `alpha = 0.5` or with replanning every 4 steps they still drop to
+76-86%):
 
 | alpha = 1, replan every 8 steps | Regression | MIP | Flow (z=0) | Flow |
 |---|---|---|---|---|
@@ -18,7 +20,9 @@ open loop:
 | same geometry, alpha = 0 | 99% | 99% | 100% | 100% |
 
 Deterministic 2-step flow still gets 99%; MIP reaches 92% with t\* = 0.5 plus
-noise. The gap tracks how far the first chunk commits to one gap. This does not
+noise. Policies that succeed commit their first chunk further towards one gap,
+though not monotonically (one-step flow and MIP commit similarly but succeed
+84% vs 36%). This does not
 show that distribution learning is necessary: a deterministic policy that picks
 a gap solves the task.
 
@@ -30,12 +34,16 @@ in the gripper command, not arm motion.
 Suggested by the paper's first author ([followup.py](followup.py)):
 
 - **Original-form MIP** (`t* a + (1 - t*) z`): with a deterministic sampler it
-  stays below flow at every t\* in 0.3-0.9 (best 70%); with noise in the second
-  step it reaches 94% at t\* = 0.4.
+  stays below flow at every tested t\* in 0.3-0.9 (best 70%); with noise added
+  to the second-step input (not part of the official sampler) it reaches 94% at
+  t\* = 0.4.
   ![t* sweep](figures/followup_tstar.png)
-- **First-chunk displacement vs start position:** one-step flow from z = 0
-  follows the side of the start (98% of positions) with a smooth ramp, not the
-  conditional mean; 20-step flow is a sharp step; regression stays near zero.
+- **First-chunk displacement vs start position** (relative to the expert's
+  average first-chunk displacement): one-step flow from z = 0 moves towards the
+  side of the start at 98% of seed-position pairs (excluding |x0| <= 0.005),
+  with a smooth ramp rather than the conditional mean; 20-step flow switches
+  sharply near x0 = 0 (seed-dependent offset); regression moves much less and
+  does not follow the side of the start (37%).
   ![first chunk](figures/followup_chunk.png)
 
 ## Run

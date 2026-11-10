@@ -1,0 +1,87 @@
+grid complete; all primary evaluations share 400 initial states (400 distinct)
+    n_demos      method  seed  windows     passes   hours  train_last  train_mean  final_zero  final_stochastic
+0       200        flow     0    94562   3248.662   6.305       0.650       0.645       0.660             0.655
+1       200        flow     1    94562   3248.662   6.365       0.875       0.780       0.668             0.678
+2       200        flow     2    94562   3248.662   6.047       0.650       0.670       0.688             0.712
+3       200         mip     0    94562   3248.662  10.347       0.550       0.535       0.500               NaN
+4       200         mip     1    94562   3248.662  10.567       0.425       0.490       0.445               NaN
+5       200         mip     2    94562   3248.662  10.274       0.475       0.515       0.460               NaN
+6       200  regression     0    94562   3248.662   5.666       0.325       0.355       0.290               NaN
+7       200  regression     1    94562   3248.662   5.593       0.325       0.330       0.320               NaN
+8       200  regression     2    94562   3248.662   5.650       0.325       0.285       0.232               NaN
+9        25        flow     0    10866  28271.673   6.623       0.350       0.255       0.195             0.230
+10       25        flow     1    12664  24257.738   6.585       0.125       0.120       0.108             0.108
+11       25        flow     2    11951  25704.962   6.572       0.050       0.130       0.130             0.120
+12       25         mip     0    10866  28271.673  10.966       0.075       0.110       0.105               NaN
+13       25         mip     1    12664  24257.738  10.782       0.050       0.090       0.055               NaN
+14       25         mip     2    11951  25704.962  10.684       0.050       0.040       0.040               NaN
+15       25  regression     0    10866  28271.673   6.400       0.025       0.045       0.058               NaN
+16       25  regression     1    12664  24257.738   6.098       0.075       0.055       0.048               NaN
+17       25  regression     2    11951  25704.962   6.046       0.025       0.020       0.018               NaN
+
+windows and passes through the data at each size
+               windows   passes
+n_demos seed                  
+25      0       10866  28272.0
+        1       12664  24258.0
+        2       11951  25705.0
+200     0       94562   3249.0
+        1       94562   3249.0
+        2       94562   3249.0
+
+primary: final_zero, mean over seeds (%)
+ method   flow   mip  regression
+n_demos                        
+25       14.4   6.7         4.1
+200      67.2  46.8        28.1
+
+same, sd over seeds (points)
+ method   flow  mip  regression
+n_demos                       
+25        4.5  3.4         2.1
+200       1.4  2.8         4.4
+
+secondary: flow with stochastic sampling (%)
+ seed        0     1     2
+n_demos                  
+25       23.0  10.8  12.0
+200      65.5  67.8  71.2
+
+training evaluations (%), 40 episodes each, not paired
+ method   flow   mip  regression
+n_demos                        
+25       17.5   5.8         4.2
+200      72.5  48.3        32.5
+
+reference at N=200, not a pass/fail gate (the protocols differ)
+  flow: final 67.2%, paper average 73%, paper best 87%
+  mip: final 46.8%, paper average 71%, paper best 82%
+  regression: final 28.1%, paper average 59%, paper best 73%
+
+per seed gaps (points)
+flow-regression
+ n_demos   25    200
+seed               
+0        13.8  37.0
+1         6.0  34.8
+2        11.2  45.5
+ mean {25: 10.3, 200: 39.1}
+mip-regression
+ n_demos  25    200
+seed              
+0        4.7  21.0
+1        0.8  12.5
+2        2.2  22.8
+ mean {25: 2.6, 200: 18.8}
+flow-mip
+ n_demos  25    200
+seed              
+0        9.0  16.0
+1        5.2  22.2
+2        9.0  22.7
+ mean {25: 7.8, 200: 20.3}
+
+change of the gap with fewer demos (points)
+primary d = g25 - g200, flow-regression: per seed [-23.3, -28.8, -34.2], mean -28.8, sd 5.5, t interval [-42.4, -15.1], bank-only 95% [-33.3, -24.3]
+primary d = g25 - g200, mip-regression: per seed [-16.3, -11.8, -20.5], mean -16.2, sd 4.4, t interval [-27.0, -5.3], bank-only 95% [-20.2, -12.1]
+primary d = g25 - g200, flow-mip: per seed [-7.0, -17.0, -13.7], mean -12.6, sd 5.1, t interval [-25.3, 0.1], bank-only 95% [-17.2, -8.0]
